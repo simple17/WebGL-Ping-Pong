@@ -13,6 +13,12 @@ function foo() {
     //устанавливаем размер области для 3д графики
     renderer.setSize(window.innerWidth, window.innerHeight);
 
+    //массив для объектов с которыми может столкнуться шарик
+    var collidableMeshList = [];
+
+    //var controls = new THREE.Orb
+
+
     //первый куб с размерами, задаём цвет
     var cubeGeometry = new THREE.CubeGeometry(vars.sizeOfPlayers,2,0);
     var cubeMaterial = new THREE.MeshBasicMaterial(
@@ -23,6 +29,7 @@ function foo() {
     cubeFirst.position.y = -13;
     cubeFirst.position.z = 0;
     vars.SCENE.add(cubeFirst);
+    collidableMeshList.push(cubeFirst);
 
     //второй куб
     var cubeGeometry = new THREE.CubeGeometry(vars.sizeOfPlayers,2,0);
@@ -34,6 +41,8 @@ function foo() {
     cubeSecond.position.y = 5;
     cubeSecond.position.z = 0;
     vars.SCENE.add(cubeSecond);
+    collidableMeshList.push(cubeSecond);
+
 
     //третий куб
     var cubeGeometry = new THREE.CubeGeometry(vars.sizeOfPlayers,2,0);
@@ -42,11 +51,23 @@ function foo() {
     var cubeThird = new THREE.Mesh(cubeGeometry, cubeMaterial);
     cubeThird.rotation.z = -45;
     cubeThird.position.x = 15;
-    cubeThird.position.y = 5;
+    cubeThird.position.y = 0;
     cubeThird.position.z = 0;
     vars.SCENE.add(cubeThird);
+    collidableMeshList.push(cubeThird);
 
     //создаём сферу
+    /*
+    var sphereGeometry = new THREE.SphereGeometry(2,20,20);
+    var sphereMaterial = new THREE.MeshLambertMaterial(
+        {color: 0x7777ff});
+    var sphere = new THREE.Mesh(sphereGeometry,sphereMaterial);
+    sphere.position.x = 0;
+    sphere.position.y = 0;
+    sphere.position.z = 0;
+    vars.SCENE.add(sphere);
+    */
+
     var sphereGeometry = new THREE.SphereGeometry(2,20,20);
     var sphereMaterial = new THREE.MeshLambertMaterial(
         {color: 0x7777ff});
@@ -104,6 +125,32 @@ function foo() {
     var axes = new THREE.AxisHelper(3);
     vars.SCENE.add(axes);
     var direction = 'left';
+
+
+
+    //var originPoint = sphere.position.clone();
+    console.log("I am originPoint");
+    //console.log(originPoint);
+/*
+    for(var vertexIndex = 0; vertexIndex < sphere.geometry.vertices.length; vertexIndex++){
+        var localVertex = sphere.geometry.vertices[vertexIndex].clone();
+        var globalVertex = localVertex.applyMatrix4(sphere.matrix);
+        var directionVector = globalVertex.sub(sphere.position);
+
+        var ray = new THREE.Raycaster(originPoint, directionVector.clone().normalize());
+        var collisionResults = ray.intersectObjects(collidableMeshList);
+        if(collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()){
+            console.log("Hit");
+        }
+    }
+*/
+
+    function checkCollision(){
+
+    }
+
+    var collisionDetect = true;
+
     function render() {
         step+=0.05;
         sphere.position.x = 0+(cubeThird.position.x*(Math.cos(step)));
@@ -172,6 +219,25 @@ function foo() {
             cubeSecond.position.y = cubeSecond.position.y-cubeStep;
         }
 */
+
+        if (collisionDetect) {
+            var originPoint = sphere.position.clone();
+            for (var vertexIndex = 0; vertexIndex < sphere.geometry.vertices.length; vertexIndex++) {
+                var localVertex = sphere.geometry.vertices[vertexIndex].clone();
+                var globalVertex = localVertex.applyMatrix4(sphere.matrix);
+                var directionVector = globalVertex.sub(sphere.position);
+
+                var ray = new THREE.Raycaster(originPoint, directionVector.clone().normalize());
+                var collisionResults = ray.intersectObjects(collidableMeshList);
+                if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() && collisionDetect) {
+                    //collisionDetect = !collisionDetect;
+                    console.log("Hit");
+                    collisionResults = [];
+                    collisionDetect = false;
+                }
+            }
+        }
+
         requestAnimationFrame(render);
         renderer.render(vars.SCENE, camera);
     }
