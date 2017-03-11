@@ -7,12 +7,25 @@
   }
 
   socket.onmessage = function(msg){
-    console.log(JSON.parse(msg.data));
+    var data = JSON.parse(msg.data);
+    //Я сильный волчара!!!! :DDDDDD
+    if(data[1] !== undefined){
+      players.first.direction = parseInt(data[1].orientation.y) <= 0 ? 'left' : 'right';
+      console.log('first goes ' + players.first.direction);
+    }
+    if(data[2] !== undefined){
+      players.second.direction = parseInt(data[2].orientation.y) <= 0 ? 'left' : 'right';
+      console.log('second goes ' + players.first.direction);
+    }
+    if(data[3] !== undefined){
+      players.third.direction = parseInt(data[3].orientation.y) <= 0 ? 'left' : 'right';
+      console.log('third goes ' + players.first.direction);
+    }
   }
 
   setInterval(() => {
     socket.send(JSON.stringify({type: 'getStates'}));
-  }, 200);
+  }, 100);
 })();
 
 function foo() {

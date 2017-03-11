@@ -37,9 +37,13 @@ wss.on("connection", function(w){
 
     switch (messageData.type) {
       case 'setOrientation':
-        clientsState[messageData.clientId] = {
-          orientation: messageData.orientation
-        };
+        if(typeof clientsState[messageData.clientId] !== 'undefined'){
+          clientsState[messageData.clientId].orientation =  messageData.orientation;
+        } else{
+          clientsState[messageData.clientId] = messageData;
+        }
+
+        console.log('Message :: ', messageData.clientId, msg);
         break;
       case 'getStates':
         w.send(JSON.stringify(clientsState));
