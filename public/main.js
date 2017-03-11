@@ -1,3 +1,33 @@
+(() => {
+  var socket = new WebSocket(`ws://${window.location.hostname}:${window.location.port}/client`);
+  socket.onopen = function(){
+    socket.send(JSON.stringify({
+      type: 'initView'
+    }));
+  }
+
+  socket.onmessage = function(msg){
+    var data = JSON.parse(msg.data);
+    //Я сильный волчара!!!! :DDDDDD
+    if(data[1] !== undefined){
+      players.first.direction = parseInt(data[1].orientation.y) <= 0 ? 'left' : 'right';
+      console.log('first goes ' + players.first.direction);
+    }
+    if(data[2] !== undefined){
+      players.second.direction = parseInt(data[2].orientation.y) <= 0 ? 'left' : 'right';
+      console.log('second goes ' + players.first.direction);
+    }
+    if(data[3] !== undefined){
+      players.third.direction = parseInt(data[3].orientation.y) <= 0 ? 'left' : 'right';
+      console.log('third goes ' + players.first.direction);
+    }
+  }
+
+  setInterval(() => {
+    socket.send(JSON.stringify({type: 'getStates'}));
+  }, 100);
+})();
+
 function foo() {
     console.log('foo is running');
     // here we'll put the Three.js stuff
@@ -12,6 +42,7 @@ function foo() {
     renderer.setClearColor(0xEEEEEE);
     //устанавливаем размер области для 3д графики
     renderer.setSize(window.innerWidth, window.innerHeight);
+    var collidableMeshList = [];
 
     //массив для объектов с которыми может столкнуться шарик
     var collidableMeshList = [];
@@ -25,8 +56,8 @@ function foo() {
         {color: 0x6C8995, wireframe: false});
     var cubeFirst = new THREE.Mesh(cubeGeometry, cubeMaterial);
     //cube.rotation.z = -0.5*Math.PI;
-    cubeFirst.position.x = 0;
-    cubeFirst.position.y = -13;
+    cubeFirst.position.x = players.first.startPosition.x;
+    cubeFirst.position.y = players.first.startPosition.y;
     cubeFirst.position.z = 0;
     vars.SCENE.add(cubeFirst);
     collidableMeshList.push(cubeFirst);
@@ -37,12 +68,11 @@ function foo() {
         {color: 0x1b243b, wireframe: false});
     var cubeSecond = new THREE.Mesh(cubeGeometry, cubeMaterial);
     cubeSecond.rotation.z = 45;
-    cubeSecond.position.x = -15;
-    cubeSecond.position.y = 5;
+    cubeSecond.position.x = players.second.startPosition.x;
+    cubeSecond.position.y = players.second.startPosition.y;
     cubeSecond.position.z = 0;
     vars.SCENE.add(cubeSecond);
     collidableMeshList.push(cubeSecond);
-
 
     //третий куб
     var cubeGeometry = new THREE.CubeGeometry(vars.sizeOfPlayers,2,0);
@@ -50,24 +80,13 @@ function foo() {
         {color: 0x425b4d, wireframe: false});
     var cubeThird = new THREE.Mesh(cubeGeometry, cubeMaterial);
     cubeThird.rotation.z = -45;
-    cubeThird.position.x = 15;
-    cubeThird.position.y = 0;
+    cubeThird.position.x = players.third.startPosition.x;
+    cubeThird.position.y = players.third.startPosition.y;
     cubeThird.position.z = 0;
     vars.SCENE.add(cubeThird);
     collidableMeshList.push(cubeThird);
 
     //создаём сферу
-    /*
-    var sphereGeometry = new THREE.SphereGeometry(2,20,20);
-    var sphereMaterial = new THREE.MeshLambertMaterial(
-        {color: 0x7777ff});
-    var sphere = new THREE.Mesh(sphereGeometry,sphereMaterial);
-    sphere.position.x = 0;
-    sphere.position.y = 0;
-    sphere.position.z = 0;
-    vars.SCENE.add(sphere);
-    */
-
     var sphereGeometry = new THREE.SphereGeometry(2,20,20);
     var sphereMaterial = new THREE.MeshLambertMaterial(
         {color: 0x7777ff});
@@ -161,11 +180,11 @@ function foo() {
         //условие перемещения нижнего куба
 
         if (players.first.direction == 'left' && cubeFirst.position.x > -vars.sizeOfSideOfTriangle) {
-            cubeFirst.position.x = cubeFirst.position.x - vars.cubeStep;
+            cubeFirst.position.x -= vars.cubeStep;
         } else if (players.first.direction == 'left' && cubeFirst.position.x <= -vars.sizeOfSideOfTriangle) {
             players.first.direction = 'right';
         } else if (players.first.direction == 'right' && cubeFirst.position.x <= vars.sizeOfSideOfTriangle) {
-            cubeFirst.position.x = cubeFirst.position.x + vars.cubeStep;
+            cubeFirst.position.x += vars.cubeStep;
         } else if (players.first.direction == 'right' && cubeFirst.position.x > vars.sizeOfSideOfTriangle) {
             players.first.direction = 'left';
         }
@@ -173,25 +192,56 @@ function foo() {
 
         //movement of second player
 
-        if (players.second.direction == 'left' && cubeSecond.position.x > -vars.sizeOfSideOfTriangle) {
-            cubeSecond.position.x = cubeSecond.position.x - vars.cubeStep;
-        } else if (players.second.direction == 'left' && cubeSecond.position.x <= -vars.sizeOfSideOfTriangle) {
+        if (players.second.direction == 'left' &&
+            cubeSecond.position.x > -vars.sizeOfSideOfTriangle &&
+            cubeSecond.position.y > -vars.sizeOfSideOfTriangle) {
+
+            cubeSecond.position.x -= vars.cubeStep;
+            cubeSecond.position.y = Math.sqrt(3) * cubeSecond.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
+
+        } else if (players.second.direction == 'left' &&
+            cubeSecond.position.x <= -vars.sizeOfSideOfTriangle &&
+            cubeSecond.position.y <= -vars.sizeOfSideOfTriangle) {
+
             players.second.direction = 'right';
-        } else if (players.second.direction == 'right' && cubeSecond.position.x <= vars.sizeOfSideOfTriangle) {
-            cubeSecond.position.x = cubeSecond.position.x + vars.cubeStep;
-        } else if (players.second.direction == 'right' && cubeSecond.position.x > vars.sizeOfSideOfTriangle) {
+
+        } else if (players.second.direction == 'right' &&
+            cubeSecond.position.x <= 0 &&
+            cubeSecond.position.y <= (Math.sqrt(3) - 1) * vars.sizeOfSideOfTriangle) {
+
+            cubeSecond.position.x += vars.cubeStep;
+            cubeSecond.position.y = Math.sqrt(3) * cubeSecond.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
+
+        } else if (players.second.direction == 'right' &&
+            cubeSecond.position.x > 0 &&
+            cubeSecond.position.y > (Math.sqrt(3) - 1) * vars.sizeOfSideOfTriangle) {
             players.second.direction = 'left';
         }
 
         //movement of third player
 
-        if (players.third.direction == 'left' && cubeThird.position.x > -vars.sizeOfSideOfTriangle) {
-            cubeThird.position.x = cubeThird.position.x - vars.cubeStep;
-        } else if (players.third.direction == 'left' && cubeThird.position.x <= -vars.sizeOfSideOfTriangle) {
+        if (players.third.direction == 'left' &&
+            cubeThird.position.x > 0 &&
+            cubeThird.position.y < (Math.sqrt(3) - 1) * vars.sizeOfSideOfTriangle) {
+
+            cubeThird.position.x -= vars.cubeStep;
+            cubeThird.position.y = -Math.sqrt(3) * cubeThird.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
+
+        } else if (players.third.direction == 'left' &&
+            cubeThird.position.x <= 0 &&
+            cubeThird.position.y >= (Math.sqrt(3) - 1) * vars.sizeOfSideOfTriangle) {
             players.third.direction = 'right';
-        } else if (players.third.direction == 'right' && cubeThird.position.x <= vars.sizeOfSideOfTriangle) {
-            cubeThird.position.x = cubeThird.position.x + vars.cubeStep;
-        } else if (players.third.direction == 'right' && cubeThird.position.x > vars.sizeOfSideOfTriangle) {
+
+        } else if (players.third.direction == 'right' &&
+            cubeThird.position.x < vars.sizeOfSideOfTriangle &&
+            cubeThird.position.y > -vars.sizeOfSideOfTriangle) {
+
+            cubeThird.position.x += vars.cubeStep;
+            cubeThird.position.y = -Math.sqrt(3) * cubeThird.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
+
+        } else if (players.third.direction == 'right' &&
+            cubeThird.position.x >= vars.sizeOfSideOfTriangle &&
+            cubeThird.position.y <= -vars.sizeOfSideOfTriangle) {
             players.third.direction = 'left';
         }
         //if (cubeFirst.position.x<=-15){

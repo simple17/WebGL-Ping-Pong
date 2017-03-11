@@ -4,7 +4,8 @@
   "description": "WebGL game mobile phones controlled.\r Проект для внутреннего хакатона FirstLineSoftware.",
   "main": "index.js",
   "dependencies": {
-    "express": "^4.15.2"
+    "express": "^4.15.2",
+    "websocket": "^1.0.24"
   },
   "devDependencies": {},
   "scripts": {

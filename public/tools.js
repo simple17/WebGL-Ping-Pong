@@ -7,4 +7,4 @@ var tools = {
         var line = new THREE.Line(geometry, materialRED);
         vars.SCENE.add(line);
     }
-}
+};
