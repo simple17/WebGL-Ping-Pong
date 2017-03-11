@@ -39,7 +39,7 @@ function foo() {
     //создаём отрисовщик объектов на сцене
     var renderer = new THREE.WebGLRenderer();
     console.log(renderer);
-    renderer.setClearColor(0xEEEEEE);
+    renderer.setClearColor(0x202a56);
     //устанавливаем размер области для 3д графики
     renderer.setSize(window.innerWidth, window.innerHeight);
     var collidableMeshList = [];
@@ -164,9 +164,50 @@ function foo() {
     }
 */
 
-    function checkCollision(){
-
+    var deltaTime;
+    function animate(){
+        deltaTime = clock.getDelta();
     }
+
+    function addParticles(){
+        // The number of particles in a particle system is not easily changed.
+        var particleCount = 2000;
+
+        // Particles are just individual vertices in a geometry
+        // Create the geometry that will hold all of the vertices
+        var particles = new THREE.Geometry();
+
+        // Create the vertices and add them to the particles geometry
+        for (var p = 0; p < particleCount; p++) {
+
+            // This will create all the vertices in a range of -200 to 200 in all directions
+            var x = Math.random() * 400 - 200;
+            var y = Math.random() * 400 - 200;
+            var z = Math.random() * 400 - 200;
+
+            // Create the vertex
+            var particle = new THREE.Vector3(x, y, z);
+
+            // Add the vertex to the geometry
+            particles.vertices.push(particle);
+        }
+
+        // Create the material that will be used to render each vertex of the geometry
+        var particleMaterial = new THREE.PointsMaterial(
+            {color: 0xe1e9f2,
+                size: 4,
+                map: THREE.ImageUtils.loadTexture("images/snowflake.png"),
+                blending: THREE.AdditiveBlending,
+                transparent: true,
+            });
+
+        // Create the particle system
+        particleSystem = new THREE.Points(particles, particleMaterial);
+
+        return particleSystem;
+    }
+    var particleSystem = addParticles();
+    vars.SCENE.add(particleSystem);
 
     var collisionDetect = true;
 
@@ -174,6 +215,7 @@ function foo() {
         step+=0.05;
         sphere.position.x = 0+(cubeThird.position.x*(Math.cos(step)));
         //var startPoscubeFirst = cubeFirst.position.x+0.1;
+        particleSystem.rotation.y+=0.01;
 
 
 
