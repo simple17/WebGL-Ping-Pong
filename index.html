@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Example 01.01 - Basic skeleton</title>
+    <script type="text/javascript"
+            src="https://threejs.org/build/three.min.js">
+    </script>
+    <style>
+        body{
+            /* set margin to 0 and overflow to hidden,
+            to use the complete page */
+            margin: 0;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+    <div id="WebGL-output">
+    </div>
+    <!--Javascript code that runs our Three.js examples -->
+    <script src="main.js"></script>
+    <!--<script>
+        'use strict';
+        // once everything is loaded, we run our Three.js stuff.
+        function foo() {
+            console.log('foo is running');
+            // here we'll put the Three.js stuff
+            //создаём сцену и камеру
+            var scene = new THREE.Scene();
+            var camera = new THREE.PerspectiveCamera(35,
+                    window.innerWidth / window.innerHeight,
+                    1, 1000);
+            //создаём отрисовщик объектов на сцене
+            var renderer = new THREE.WebGLRenderer();
+            console.log(renderer);
+            renderer.setClearColor(0xEEEEEE);
+            //устанавливаем размер области для 3д графики
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            //создаём оси
+            var axes = new THREE.AxisHelper( 15 );
+            //добавляем оси на сцену
+            axes.position.x = 0;
+            axes.position.y = -9;
+            axes.position.z = 0;
+            scene.add(axes);
+
+            //создаём прямоугольник с размерами, задаём цвет, расположение по оси
+            var planeGeometry = new THREE.PlaneGeometry(50,20);
+            var planeMaterial = new THREE.MeshBasicMaterial({color: 0xcccccc});
+            var plane = new THREE.Mesh(planeGeometry,planeMaterial);
+            plane.rotation.x=-0.5*Math.PI;
+            plane.position.x = 5;
+            plane.position.y = -10;
+            plane.position.z = 0;
+            scene.add(plane);
+
+            //создаём куб с размерами, задаём цвет
+            var cubeGeometry = new THREE.CubeGeometry(10,2,4);
+            var cubeMaterial = new THREE.MeshBasicMaterial(
+                    {color: 0x6C8995, wireframe: true});
+            var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+            //cube.rotation.z = -0.5*Math.PI;
+            cube.position.x = -10;
+            cube.position.y = -3;
+            cube.position.z = 0;
+            scene.add(cube);
+
+            //создаём сферу
+            var sphereGeometry = new THREE.SphereGeometry(4,20,20);
+            var sphereMaterial = new THREE.MeshBasicMaterial(
+                    {color: 0x7777ff, wireframe: true});
+            var sphere = new THREE.Mesh(sphereGeometry,sphereMaterial);
+            sphere.position.x = 20;
+            sphere.position.y = 4;
+            sphere.position.z = 2;
+            scene.add(sphere);
+
+            //задаём положение камеры
+            camera.position.y = 10;
+            camera.position.z = 50;
+            camera.lookAt(scene.position);
+
+            let div = document.querySelector('#WebGL-output');
+            div.append(renderer.domElement);
+            renderer.render(scene, camera);
+        };
+        foo();
+    </script>-->
+</body>
+</html>
