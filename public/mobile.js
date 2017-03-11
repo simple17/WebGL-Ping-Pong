@@ -44,10 +44,17 @@ window.globalData = {
 
   var socket = new WebSocket(`ws://${window.location.hostname}:${window.location.port}/client`);
   socket.onopen = function(){
-
+    socket.send(JSON.stringify({clientId: window.location.hash.slice(1), type: 'initClient'}));
     setInterval(function(){
       console.log(window.globalData);
       socket.send(JSON.stringify(window.globalData));
     }, 100);
+  }
+
+  socket.onmessage = function(msg){
+    var data = JSON.parse(msg.data);
+    if(typeof data.color != 'undefined'){
+      document.body.style.background = data.color;
+    }
   }
 })();
