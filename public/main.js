@@ -44,6 +44,12 @@ function foo() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     var collidableMeshList = [];
 
+    //массив для объектов с которыми может столкнуться шарик
+    var collidableMeshList = [];
+
+    //var controls = new THREE.Orb
+
+
     //первый куб с размерами, задаём цвет
     var cubeGeometry = new THREE.CubeGeometry(vars.sizeOfPlayers,2,0);
     var cubeMaterial = new THREE.MeshBasicMaterial(
@@ -80,7 +86,6 @@ function foo() {
     vars.SCENE.add(cubeThird);
     collidableMeshList.push(cubeThird);
 
-
     //создаём сферу
     var sphereGeometry = new THREE.SphereGeometry(2,20,20);
     var sphereMaterial = new THREE.MeshLambertMaterial(
@@ -90,9 +95,6 @@ function foo() {
     sphere.position.y = 0;
     sphere.position.z = 0;
     vars.SCENE.add(sphere);
-    var sphereStartPosition = sphere.position.clone();
-    console.log("SPHERE");
-    console.log(sphereStartPosition);
 
     //создаём источник света
     var spotLight = new THREE.SpotLight( 0xffffff );
@@ -143,9 +145,30 @@ function foo() {
     vars.SCENE.add(axes);
     var direction = 'left';
 
-    var ray = new THREE.Raycaster( sphereStartPosition, sphere.position.clone().normalize() );
-    var collisionResults = ray.intersectObjects( collidableMeshList );
-    console.log(collisionResults);
+
+
+    //var originPoint = sphere.position.clone();
+    console.log("I am originPoint");
+    //console.log(originPoint);
+/*
+    for(var vertexIndex = 0; vertexIndex < sphere.geometry.vertices.length; vertexIndex++){
+        var localVertex = sphere.geometry.vertices[vertexIndex].clone();
+        var globalVertex = localVertex.applyMatrix4(sphere.matrix);
+        var directionVector = globalVertex.sub(sphere.position);
+
+        var ray = new THREE.Raycaster(originPoint, directionVector.clone().normalize());
+        var collisionResults = ray.intersectObjects(collidableMeshList);
+        if(collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()){
+            console.log("Hit");
+        }
+    }
+*/
+
+    function checkCollision(){
+
+    }
+
+    var collisionDetect = true;
 
     function render() {
         step+=0.05;
@@ -221,14 +244,14 @@ function foo() {
             cubeThird.position.y <= -vars.sizeOfSideOfTriangle) {
             players.third.direction = 'left';
         }
-
-
-
-
-        //var localVertex = sphere.geometry.vertices[vertexIndex].clone();
-        //var globalVertex = localVertex.applyMatrix4( sphere.matrix );
-        //var directionVector = globalVertex.sub( sphere.position );
-
+        //if (cubeFirst.position.x<=-15){
+        //    console.log("max"+cubeFirst.position.x);
+        //    cubeFirst.position.x = cubeFirst.position.x+cubeStep;
+        //}
+        //else{
+        //    console.log("min"+cubeFirst.position.x);
+        //    cubeFirst.position.x = cubeFirst.position.x-cubeStep;
+        //}
 
 /*
         if(cubeSecond.position.x > posSecondCube){
@@ -246,6 +269,25 @@ function foo() {
             cubeSecond.position.y = cubeSecond.position.y-cubeStep;
         }
 */
+
+        if (collisionDetect) {
+            var originPoint = sphere.position.clone();
+            for (var vertexIndex = 0; vertexIndex < sphere.geometry.vertices.length; vertexIndex++) {
+                var localVertex = sphere.geometry.vertices[vertexIndex].clone();
+                var globalVertex = localVertex.applyMatrix4(sphere.matrix);
+                var directionVector = globalVertex.sub(sphere.position);
+
+                var ray = new THREE.Raycaster(originPoint, directionVector.clone().normalize());
+                var collisionResults = ray.intersectObjects(collidableMeshList);
+                if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length() && collisionDetect) {
+                    //collisionDetect = !collisionDetect;
+                    console.log("Hit");
+                    collisionResults = [];
+                    collisionDetect = false;
+                }
+            }
+        }
+
         requestAnimationFrame(render);
         renderer.render(vars.SCENE, camera);
     }
