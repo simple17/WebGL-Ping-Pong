@@ -1,3 +1,20 @@
+(() => {
+  var socket = new WebSocket(`ws://${window.location.hostname}:${window.location.port}/client`);
+  socket.onopen = function(){
+    socket.send(JSON.stringify({
+      type: 'initView'
+    }));
+  }
+
+  socket.onmessage = function(msg){
+    console.log(JSON.parse(msg.data));
+  }
+
+  setInterval(() => {
+    socket.send(JSON.stringify({type: 'getStates'}));
+  }, 200);
+})();
+
 function foo() {
     console.log('foo is running');
     // here we'll put the Three.js stuff
