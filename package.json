@@ -1,0 +1,23 @@
+{
+  "name": "webgl-ping-pong",
+  "version": "1.0.0",
+  "description": "WebGL game mobile phones controlled.\r Проект для внутреннего хакатона FirstLineSoftware.",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.15.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/simple17/WebGL-Ping-Pong.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/simple17/WebGL-Ping-Pong/issues"
+  },
+  "homepage": "https://github.com/simple17/WebGL-Ping-Pong#readme"
+}
