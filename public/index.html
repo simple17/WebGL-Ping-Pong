@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <title>Example 01.01 - Basic skeleton</title>
+    <link href="style.css" rel="stylesheet" type="text/css"/>
     <script type="text/javascript"
             src="https://threejs.org/build/three.min.js">
     </script>
@@ -19,6 +20,33 @@
 </head>
 <body>
     <div id="WebGL-output">
+    </div>
+
+    <div class="scores">
+      <div class="first">
+        <p >
+          RED
+        </p>
+        <p id="firstPlayerScore">
+
+        </p>
+      </div>
+      <div class="second" >
+        <p >
+          GREEN
+        </p>
+        <p id="secondPlayerScore">
+
+        </p>
+      </div>
+      <div class="third" >
+        <p >
+          BLUE
+        </p>
+        <p id="thirdPlayerScore">
+
+        </p>
+      </div>
     </div>
     <!--Javascript code that runs our Three.js examples -->
     <script src="main.js"></script>

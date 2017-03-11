@@ -1,6 +1,7 @@
 var players = {
     first: {
         direction: 'left',
+        score: 0,
         startPosition: {
             x: 0,
             y: -13
@@ -8,6 +9,7 @@ var players = {
     },
     second: {
         direction: 'left',
+        score: 0,
         startPosition: {
             x: -6,
             y: - Math.sqrt(3) * 6 + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1)
@@ -15,6 +17,7 @@ var players = {
     },
     third: {
         direction: 'left',
+        score: 0,
         startPosition: {
             x: 6,
             y: - Math.sqrt(3) * 6 + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1)

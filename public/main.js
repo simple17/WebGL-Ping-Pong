@@ -343,21 +343,18 @@ function foo() {
                 }
             }
         }
-
+        renderScores();
         requestAnimationFrame(render);
         renderer.render(vars.SCENE, camera);
     }
 
     render();
 
-    /*
-    function renderScene(){
-        requestAnimationFrame(renderScene);
-        renderer.render(scene, camera);
+    function renderScores(){
+      document.getElementById('firstPlayerScore').textContent = players['first'].score;
+      document.getElementById('secondPlayerScore').textContent = players['second'].score;
+      document.getElementById('thirdPlayerScore').textContent = players['third'].score;
     }
-
-    renderScene();
-*/
 
 };
 foo();
