@@ -61,7 +61,7 @@ function foo() {
     redGoal.position.y = -vars.sizeOfSideOfTriangle;
     redGoal.position.z = 0;
     redGoal.name = 'redGoal';
-    redGoal.v = new THREE.Vector3(1,0,0);
+    redGoal.normal = new THREE.Vector3(1,0,0).applyAxisAngle(new THREE.Vector3(0,0,1), Math.PI/2);
     vars.SCENE.add(redGoal);
 
 
@@ -71,7 +71,7 @@ function foo() {
     greenGoal.position.y = - Math.sqrt(3) * vars.sizeOfSideOfTriangle / 2 + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
     greenGoal.position.z = 0;
     greenGoal.name = 'greenGoal';
-    greenGoal.v = new THREE.Vector3(1/2,Math.sqrt(3)/2,0);
+    greenGoal.normal = new THREE.Vector3(1/2,Math.sqrt(3)/2,0).applyAxisAngle(new THREE.Vector3(0,0,1), 3*Math.PI/2);
     vars.SCENE.add(greenGoal);
 
 
@@ -81,7 +81,7 @@ function foo() {
     blueGoal.position.y = - Math.sqrt(3) * vars.sizeOfSideOfTriangle / 2 + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
     blueGoal.position.z = 0;
     blueGoal.name = 'blueGoal';
-    blueGoal.v = new THREE.Vector3(-1/2,Math.sqrt(3)/2,0);
+    blueGoal.normal = new THREE.Vector3(-1/2,Math.sqrt(3)/2,0).applyAxisAngle(new THREE.Vector3(0,0,1), Math.PI/2);
     vars.SCENE.add(blueGoal);
 
     //Рёбра
@@ -120,7 +120,7 @@ function foo() {
     //первый куб с размерами, задаём цвет
     var cubeGeometry = new THREE.CubeGeometry(vars.sizeOfPlayers, 0.5, 0);
     var cubeMaterial = new THREE.MeshBasicMaterial(
-        {color: 0x6C8995, wireframe: false});
+        {color: 0xff0000, wireframe: false});
     var cubeFirst = new THREE.Mesh(cubeGeometry, cubeMaterial);
     //cube.rotation.z = -0.5*Math.PI;
     cubeFirst.position.x = players.first.startPosition.x;
@@ -133,7 +133,7 @@ function foo() {
     //второй куб
     var cubeGeometry = new THREE.CubeGeometry(vars.sizeOfPlayers, 0.5, 0);
     var cubeMaterial = new THREE.MeshBasicMaterial(
-        {color: 0x1b243b, wireframe: false});
+        {color: 0x00ff00, wireframe: false});
     var cubeSecond = new THREE.Mesh(cubeGeometry, cubeMaterial);
     cubeSecond.rotation.z = Math.PI/3;
     cubeSecond.position.x = players.second.startPosition.x;
@@ -146,7 +146,7 @@ function foo() {
     //третий куб
     var cubeGeometry = new THREE.CubeGeometry(vars.sizeOfPlayers, 0.5, 0);
     var cubeMaterial = new THREE.MeshBasicMaterial(
-        {color: 0x425b4d, wireframe: false});
+        {color: 0x0000ff, wireframe: false});
     var cubeThird = new THREE.Mesh(cubeGeometry, cubeMaterial);
     cubeThird.rotation.z = 2 * Math.PI/3;
     cubeThird.position.x = players.third.startPosition.x;
@@ -402,8 +402,8 @@ function foo() {
       }
 
 
-      rays = [
-          new THREE.Vector3(1, 0, 1),
+      //rays = [
+         var movementDirection =  new THREE.Vector3(1, 0, 1);
           //new THREE.Vector3(0, 0, 1),
           //new THREE.Vector3(1, 0, 0),
           //new THREE.Vector3(1, 0, -1),
@@ -411,32 +411,21 @@ function foo() {
           //new THREE.Vector3(-1, 0, -1),
           //new THREE.Vector3(-1, 0, 0),
           //new THREE.Vector3(-1, 0, 1)
-      ];
+      //];
 
-
-      var originPoint = sphere.position.clone();
+        calculateCollisionPoint(sphere.position);
       var ray = new THREE.Raycaster();
-      for (var vertexIndex = 0; vertexIndex < rays.length; vertexIndex++) {
+      //for (var vertexIndex = 0; vertexIndex < rays.length; vertexIndex++) {
           if (collisionDetect) {
-              var localVertex = rays[vertexIndex];
-              var v1 =   new THREE.Vector3(vars.sphere.stepX,vars.sphere.stepY,0);
-              v1 = v1.normalize();
-              var newPoint = new THREE.Vector3(originPoint.x + v1.x*0.5, originPoint.y + v1.y*0.5, 0);
-              ray.set(newPoint, localVertex);
+              ray.set(vars.sphere.collisionPoint, movementDirection);
               var collisionResults = ray.intersectObjects(collidableMeshList);
-
-              var v2 = new THREE.Vector3(vars.sphere.stepX,vars.sphere.stepY,0);
-              if (collisionResults.length > 0 && collisionResults[0].distance <= 1 && collisionDetect) {
+             if (collisionResults.length > 0 && collisionResults[0].distance <= 1 && collisionDetect) {
                   console.log("Hit");
-                  console.log(localVertex);
                   var nextSteps = {
                       stepX: vars.sphere.stepX,
                       stepY: vars.sphere.stepY
                   };
                   var thisElement = collisionResults[0].object;
-
-
-
                   switch (thisElement.name){
                       case 'red':
                           console.log('red rocket');
@@ -453,23 +442,20 @@ function foo() {
                       case 'redGoal':
                           console.log('redGoal');
                           //nextSteps = goalReflect(vars.sphere.stepX, vars.sphere.stepY, 'first');
-                          var t1= v2.applyAxisAngle(new THREE.Vector3(0,0,1), Math.PI/2);
-                          nextSteps = test(t1,thisElement.v);
-                          //nextSteps = rocketReflect(vars.sphere.stepX, vars.sphere.stepY, 'red');
+                          nextSteps = reflect(thisElement.normal,vars.sphere.direction);
+                          players.first.score -=1;
                           break;
                       case 'greenGoal':
                           console.log('greenGoal');
-                          var t1= v2.applyAxisAngle(new THREE.Vector3(0,0,1), -Math.PI/2);
-                          nextSteps = test(t1,thisElement.v);
+                          nextSteps = reflect(thisElement.normal,vars.sphere.direction);
+                          players.second.score -=1;
                           //nextSteps = goalReflect(vars.sphere.stepX, vars.sphere.stepY, 'second');
-                          //nextSteps = rocketReflect(vars.sphere.stepX, vars.sphere.stepY, 'green');
                           break;
                       case 'blueGoal':
                           console.log('blueGoal');
-                          var t1= v2.applyAxisAngle(new THREE.Vector3(0,0,1), Math.PI/2);
-                          nextSteps = test(t1,thisElement.v);
+                          nextSteps = reflect(thisElement.normal,vars.sphere.direction);
+                          players.third.score -=1;
                           //nextSteps = goalReflect(vars.sphere.stepX, vars.sphere.stepY, 'third');
-                          //nextSteps = rocketReflect(vars.sphere.stepX, vars.sphere.stepY, 'blue');
                           break;
                       case 'borderGB':
                           console.log('borderGB');
@@ -487,28 +473,38 @@ function foo() {
                           console.log('What the fuck!?');
                   }
 
-                  vars.sphere.stepX = nextSteps.stepX;
-                  vars.sphere.stepY = nextSteps.stepY;
+                  if(nextSteps) {
+                      move(nextSteps.stepX,nextSteps.stepY);
+                  }
+
                   collisionResults = [];
                   collisionDetect = false;
               }
           }
-      }
+      //}
       collisionDetect = true;
 
       renderScores();
       requestAnimationFrame(render);
       renderer.render(vars.SCENE, camera);
 
-      function test(normalVect, objectVect){
-
-            //t1 = t1.normalize();
-            var t = objectVect.reflect(normalVect);
-            return {
-                stepX: t.x,
-                stepY: t.y
-            };
+        function reflect(normalVect, objectVect){
+            objectVect.reflect(normalVect);
+            move(objectVect.x,objectVect.y);
         }
+
+        function move(x,y){
+            vars.sphere.stepX = x;
+            vars.sphere.stepY = y;
+            vars.sphere.direction.x = x;
+            vars.sphere.direction.y = y;
+        }
+
+        function calculateCollisionPoint(centerPoint){
+            vars.sphere.collisionPoint.x = vars.sphere.direction.x * vars.sphere.radius + centerPoint.x;
+            vars.sphere.collisionPoint.y = vars.sphere.direction.y * vars.sphere.radius + centerPoint.y;
+        }
+
         function borderReflect(stepX,stepY){
             return {
                 stepX: -stepX,
