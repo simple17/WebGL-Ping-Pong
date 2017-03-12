@@ -9,7 +9,10 @@ vars = {
             y: 0
         },
         stepX: 0.2,
-        stepY: 0.1
+        stepY: 0.1,
+        direction: new THREE.Vector3(this.stepX, this.stepY,0),
+        radius: 0.5,
+        collisionPoint: new THREE.Vector3(0,0,0)
     },
     goalWidth: 0.5,
     borderWidth: 0.5,
