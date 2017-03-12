@@ -323,6 +323,13 @@ function foo() {
     var collisionDetect = false;
     var firstFrame = true;
     var prevTime = Date.now();
+
+    composer = new THREE.EffectComposer( renderer );
+    composer.addPass( new THREE.RenderPass( vars.SCENE, camera ) );
+    glitchPass = new THREE.GlitchPass();
+    glitchPass.renderToScreen = true;
+    composer.addPass( glitchPass );
+
     function render() {
       particleSystem.rotation.y+=0.01;
       sphere.position.x += vars.sphere.stepX;
@@ -495,7 +502,9 @@ function foo() {
 
       renderScores();
       requestAnimationFrame(render);
-      renderer.render(vars.SCENE, camera);
+
+      // renderer.render(vars.SCENE, camera);
+      composer.render();
 
         function reflect(normalVect, objectVect){
             objectVect.reflect(normalVect);
