@@ -4,7 +4,7 @@ vars = {
     sizeOfPlayers: 5,
     cubeStep: 0.1,
     sphere: {
-        direction: new THREE.Vector3(-0.3, 0.15,0),
+        direction: new THREE.Vector3(0.13, 0.13,0),
         radius: 0.5,
         collisionPoint: new THREE.Vector3(0,0,0)
     },

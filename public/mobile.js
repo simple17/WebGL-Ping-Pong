@@ -48,7 +48,7 @@ window.globalData = {
     setInterval(function(){
       console.log(window.globalData);
       socket.send(JSON.stringify(window.globalData));
-    }, 100);
+    }, 50);
   }
 
   socket.onmessage = function(msg){

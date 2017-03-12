@@ -1,5 +1,11 @@
 (() => {
   window.horses = window.location.hash.slice(1);
+  window.beep = function(){
+    document.getElementById('beep').play();
+  }
+  window.sheep = function(){
+    document.getElementById('sheep').play();
+  }
 
   if(window.horses == 'horses'){
     document.getElementById('horse').play();
@@ -17,21 +23,24 @@
     //Я сильный волчара!!!! :DDDDDD
     if(data[1] !== undefined){
       players.first.direction = parseInt(data[1].orientation.y) <= 0 ? 'left' : 'right';
+      players.first.step = vars.cubeStep * Math.abs(parseInt(data[1].orientation.y) / 7);
       console.log('first goes ' + players.first.direction);
     }
     if(data[2] !== undefined){
       players.second.direction = parseInt(data[2].orientation.y) <= 0 ? 'left' : 'right';
+      players.second.step = vars.cubeStep * Math.abs(parseInt(data[2].orientation.y) / 14);
       console.log('second goes ' + players.first.direction);
     }
     if(data[3] !== undefined){
       players.third.direction = parseInt(data[3].orientation.y) <= 0 ? 'left' : 'right';
+      players.third.step = vars.cubeStep * Math.abs(parseInt(data[3].orientation.y) / 14);
       console.log('third goes ' + players.first.direction);
     }
   }
 
   setInterval(() => {
     socket.send(JSON.stringify({type: 'getStates'}));
-  }, 100);
+  }, 50);
 })();
 
 function foo() {
@@ -60,6 +69,9 @@ function foo() {
     var cubeGoalsGeometry = new THREE.CubeGeometry(2 * vars.sizeOfSideOfTriangle, vars.goalWidth, 0);
     var cubeGoalMaterial = new THREE.MeshBasicMaterial(
         {color: 0x494c90, wireframe: false}
+    );
+    var goalMat =  new THREE.MeshBasicMaterial(
+              {color: 0xff0000, wireframe: false}
     );
 
     var redGoal = new THREE.Mesh(cubeGoalsGeometry, cubeGoalMaterial);
@@ -359,12 +371,12 @@ function foo() {
 //условие перемещения нижнего куба
 
         if (players.first.direction == 'left' && cubeFirst.position.x > -vars.sizeOfSideOfTriangle) {
-            cubeFirst.position.x -= vars.cubeStep;
-            spotLightFirst.position.x -= vars.cubeStep;
+            cubeFirst.position.x -= players['first'].step;
+            spotLightFirst.position.x -= players['first'].step;
         } else if (players.first.direction == 'left' && cubeFirst.position.x <= -vars.sizeOfSideOfTriangle) {
             players.first.direction = 'right';
         } else if (players.first.direction == 'right' && cubeFirst.position.x <= vars.sizeOfSideOfTriangle) {
-            cubeFirst.position.x += vars.cubeStep;
+            cubeFirst.position.x += players['first'].step;
         } else if (players.first.direction == 'right' && cubeFirst.position.x > vars.sizeOfSideOfTriangle) {
             players.first.direction = 'left';
         }
@@ -376,10 +388,10 @@ function foo() {
             cubeSecond.position.x > -vars.sizeOfSideOfTriangle &&
             cubeSecond.position.y > -vars.sizeOfSideOfTriangle) {
 
-            cubeSecond.position.x -= vars.cubeStep;
+            cubeSecond.position.x -= players['second'].step;
             cubeSecond.position.y = Math.sqrt(3) * cubeSecond.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
 
-            spotLightSecond.position.x -= vars.cubeStep;
+            spotLightSecond.position.x -= players['second'].step;
             spotLightSecond.position.y = Math.sqrt(3) * cubeSecond.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
 
         } else if (players.second.direction == 'left' &&
@@ -392,10 +404,10 @@ function foo() {
             cubeSecond.position.x <= 0 &&
             cubeSecond.position.y <= (Math.sqrt(3) - 1) * vars.sizeOfSideOfTriangle) {
 
-            cubeSecond.position.x += vars.cubeStep;
+            cubeSecond.position.x += players['second'].step;
             cubeSecond.position.y = Math.sqrt(3) * cubeSecond.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
 
-            spotLightSecond.position.x += vars.cubeStep;
+            spotLightSecond.position.x += players['second'].step;
             spotLightSecond.position.y = Math.sqrt(3) * cubeSecond.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
 
         } else if (players.second.direction == 'right' &&
@@ -410,10 +422,10 @@ function foo() {
             cubeThird.position.x > 0 &&
             cubeThird.position.y < (Math.sqrt(3) - 1) * vars.sizeOfSideOfTriangle) {
 
-            cubeThird.position.x -= vars.cubeStep;
+            cubeThird.position.x -= players['third'].step;
             cubeThird.position.y = -Math.sqrt(3) * cubeThird.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
 
-            spotLightThird.position.x -= vars.cubeStep;
+            spotLightThird.position.x -= players['third'].step;
             spotLightThird.position.y = -Math.sqrt(3) * cubeThird.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
 
         } else if (players.third.direction == 'left' &&
@@ -425,10 +437,10 @@ function foo() {
             cubeThird.position.x < vars.sizeOfSideOfTriangle &&
             cubeThird.position.y > -vars.sizeOfSideOfTriangle) {
 
-            cubeThird.position.x += vars.cubeStep;
+            cubeThird.position.x += players['third'].step;
             cubeThird.position.y = -Math.sqrt(3) * cubeThird.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
 
-            spotLightThird.position.x += vars.cubeStep;
+            spotLightThird.position.x += players['third'].step;
             spotLightThird.position.y = -Math.sqrt(3) * cubeThird.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
 
         } else if (players.third.direction == 'right' &&
@@ -442,8 +454,18 @@ function foo() {
         ray.set(vars.sphere.collisionPoint, movementDirection);
         var collisionResults = ray.intersectObjects(collidableMeshList);
         if (collisionResults.length > 0 && collisionResults[0].distance <= 1) {
-            console.log("Hit");
             var thisElement = collisionResults[0].object;
+            if(collisionResults.length > 1){
+              var collisionElement;
+              collisionResults.forEach(function(el){
+                if(el.object.name.indexOf('Goal') !== -1){
+
+                }else{
+                  thisElement = el.object;
+                }
+              })
+            }
+
             switch (thisElement.name) {
                 case 'red':
                     console.log('red rocket');
@@ -458,22 +480,16 @@ function foo() {
                     nextSteps = reflect(thisElement.normal, vars.sphere.direction);
                     break;
                 case 'redGoal':
-                    console.log('redGoal');
-                    //nextSteps = goalReflect(vars.sphere.stepX, vars.sphere.stepY, 'first');
-                    nextSteps = reflect(thisElement.normal, vars.sphere.direction);
-                    players.first.score -= 1;
+                reflectGoal(thisElement)
+                players.first.score -= 1;
                     break;
                 case 'greenGoal':
-                    console.log('greenGoal');
-                    nextSteps = reflect(thisElement.normal, vars.sphere.direction);
+                    reflectGoal(thisElement)
                     players.second.score -= 1;
-                    //nextSteps = goalReflect(vars.sphere.stepX, vars.sphere.stepY, 'second');
                     break;
                 case 'blueGoal':
-                    console.log('blueGoal');
-                    nextSteps = reflect(thisElement.normal, vars.sphere.direction);
-                    players.third.score -= 1;
-                    //nextSteps = goalReflect(vars.sphere.stepX, vars.sphere.stepY, 'third');
+                reflectGoal(thisElement)
+                players.third.score -= 1;
                     break;
                 case 'borderGB':
                     console.log('borderGB');
@@ -504,9 +520,26 @@ function foo() {
             renderer.render(vars.SCENE, camera);
         }
 
+        function markGoal(obj){
+          obj.material = goalMat;
+          setTimeout(function (){obj.material = cubeGoalMaterial;},100)
+        }
+
         function reflect(normalVect, objectVect) {
             objectVect.reflect(normalVect);
             move(objectVect.x, objectVect.y);
+        }
+
+        function reflectGoal(goal){
+          reflect(goal.normal, vars.sphere.direction);
+          markGoal(goal);
+          if(window.horses == 'horses'){
+            window.beep();  
+            // window.sheep();
+          } else{
+            window.beep();
+          }
+
         }
 
         function move(x, y) {
