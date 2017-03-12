@@ -307,7 +307,7 @@ function foo() {
     vars.SCENE.add(particleSystem);
 
     //Рисуем коня
-    if(window.horses == 'horses'){
+    function addHorses(){
       var loader = new THREE.JSONLoader();
   				loader.load( "horse.js", function( geometry ) {
   					horseLeft = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( {
@@ -465,7 +465,7 @@ function foo() {
                 }
               })
             }
-
+            var horsesMode = false;
             switch (thisElement.name) {
                 case 'red':
                     console.log('red rocket');
@@ -482,14 +482,26 @@ function foo() {
                 case 'redGoal':
                 reflectGoal(thisElement)
                 players.first.score -= 1;
+                    if(players.first.score<=-10 && window.horses!="horses"){
+                        window.horses = "horses";
+                        addHorses();
+                    }
                     break;
                 case 'greenGoal':
                     reflectGoal(thisElement)
                     players.second.score -= 1;
+                    if(players.second.score<=-10 && window.horses!="horses"){
+                        window.horses = "horses";
+                        addHorses();
+                    }
                     break;
                 case 'blueGoal':
                 reflectGoal(thisElement)
                 players.third.score -= 1;
+                    if(players.third.score<=-10 && window.horses!="horses"){
+                        window.horses = "horses";
+                        addHorses();
+                    }
                     break;
                 case 'borderGB':
                     console.log('borderGB');
