@@ -1,32 +1,33 @@
-// (() => {
-//   var socket = new WebSocket(`ws://${window.location.hostname}:${window.location.port}/client`);
-//   socket.onopen = function(){
-//     socket.send(JSON.stringify({
-//       type: 'initView'
-//     }));
-//   }
-//
-//   socket.onmessage = function(msg){
-//     var data = JSON.parse(msg.data);
-//     //Я сильный волчара!!!! :DDDDDD
-//     if(data[1] !== undefined){
-//       players.first.direction = parseInt(data[1].orientation.y) <= 0 ? 'left' : 'right';
-//       console.log('first goes ' + players.first.direction);
-//     }
-//     if(data[2] !== undefined){
-//       players.second.direction = parseInt(data[2].orientation.y) <= 0 ? 'left' : 'right';
-//       console.log('second goes ' + players.first.direction);
-//     }
-//     if(data[3] !== undefined){
-//       players.third.direction = parseInt(data[3].orientation.y) <= 0 ? 'left' : 'right';
-//       console.log('third goes ' + players.first.direction);
-//     }
-//   }
-//
-//   setInterval(() => {
-//     socket.send(JSON.stringify({type: 'getStates'}));
-//   }, 100);
-// })();
+(() => {
+  window.horses = window.location.hash.slice(1);
+  var socket = new WebSocket(`ws://${window.location.hostname}:${window.location.port}/client`);
+  socket.onopen = function(){
+    socket.send(JSON.stringify({
+      type: 'initView'
+    }));
+  }
+
+  socket.onmessage = function(msg){
+    var data = JSON.parse(msg.data);
+    //Я сильный волчара!!!! :DDDDDD
+    if(data[1] !== undefined){
+      players.first.direction = parseInt(data[1].orientation.y) <= 0 ? 'left' : 'right';
+      console.log('first goes ' + players.first.direction);
+    }
+    if(data[2] !== undefined){
+      players.second.direction = parseInt(data[2].orientation.y) <= 0 ? 'left' : 'right';
+      console.log('second goes ' + players.first.direction);
+    }
+    if(data[3] !== undefined){
+      players.third.direction = parseInt(data[3].orientation.y) <= 0 ? 'left' : 'right';
+      console.log('third goes ' + players.first.direction);
+    }
+  }
+
+  setInterval(() => {
+    socket.send(JSON.stringify({type: 'getStates'}));
+  }, 100);
+})();
 
 function foo() {
   var mixer, mixer2;
@@ -280,32 +281,34 @@ function foo() {
     vars.SCENE.add(particleSystem);
 
     //Рисуем коня
+    if(window.horses == 'horses'){
+      var loader = new THREE.JSONLoader();
+  				loader.load( "horse.js", function( geometry ) {
+  					horseLeft = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( {
+  						vertexColors: THREE.FaceColors,
+  						morphTargets: true
+  					} ) );
+  					horseLeft.scale.set( 0.1, 0.1, 0.1 );
+            // mesh.position(0, 0, 0);
 
-    // var loader = new THREE.JSONLoader();
-		// 		loader.load( "horse.js", function( geometry ) {
-		// 			horseLeft = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( {
-		// 				vertexColors: THREE.FaceColors,
-		// 				morphTargets: true
-		// 			} ) );
-		// 			horseLeft.scale.set( 0.1, 0.1, 0.1 );
-    //       // mesh.position(0, 0, 0);
-    //
-		// 			vars.SCENE.add( horseLeft );
-    //
-    //       horseRight = horseLeft.clone();
-    //       horseLeft.position.set(-20,-12,5);
-    //
-    //       vars.SCENE.add( horseRight );
-    //       horseRight.position.set(20,-12,5);
-    //
-    //       mixer = new THREE.AnimationMixer( horseLeft );
-		// 			var clip = THREE.AnimationClip.CreateFromMorphTargetSequence( 'gallop', geometry.morphTargets, 30 );
-		// 			mixer.clipAction( clip ).setDuration( 1 ).play();
-    //
-    //       mixer2 = new THREE.AnimationMixer( horseRight );
-		// 			var clip2 = THREE.AnimationClip.CreateFromMorphTargetSequence( 'gallop', geometry.morphTargets, 30 );
-		// 			mixer2.clipAction( clip ).setDuration( 1 ).play();
-		// 		} );
+  					vars.SCENE.add( horseLeft );
+
+            horseRight = horseLeft.clone();
+            horseLeft.position.set(-20,-12,5);
+
+            vars.SCENE.add( horseRight );
+            horseRight.position.set(20,-12,5);
+
+            mixer = new THREE.AnimationMixer( horseLeft );
+  					var clip = THREE.AnimationClip.CreateFromMorphTargetSequence( 'gallop', geometry.morphTargets, 30 );
+  					mixer.clipAction( clip ).setDuration( 1 ).play();
+
+            mixer2 = new THREE.AnimationMixer( horseRight );
+  					var clip2 = THREE.AnimationClip.CreateFromMorphTargetSequence( 'gallop', geometry.morphTargets, 30 );
+  					mixer2.clipAction( clip ).setDuration( 1 ).play();
+  				} );
+
+    }
 
 
     function checkCollision() {
@@ -323,15 +326,16 @@ function foo() {
       sphere.position.y += vars.sphere.stepY;
 
       //АНимация лошадей
-
-      // var time = Date.now();
-      // if ( mixer ) {
-      //   mixer.update( ( time - prevTime ) * 0.001 );
-      // }
-      // if ( mixer2 ) {
-      //   mixer2.update( ( time - prevTime ) * 0.001 );
-      // }
-      // prevTime = time;
+      if(window.horses == 'horses'){
+        var time = Date.now();
+        if ( mixer ) {
+          mixer.update( ( time - prevTime ) * 0.001 );
+        }
+        if ( mixer2 ) {
+          mixer2.update( ( time - prevTime ) * 0.001 );
+        }
+        prevTime = time;  
+      }
 
       //условие перемещения нижнего куба
 
