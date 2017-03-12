@@ -1,5 +1,10 @@
 (() => {
   window.horses = window.location.hash.slice(1);
+
+  if(window.horses == 'horses'){
+    document.getElementById('horse').play();
+  }
+
   var socket = new WebSocket(`ws://${window.location.hostname}:${window.location.port}/client`);
   socket.onopen = function(){
     socket.send(JSON.stringify({
@@ -334,7 +339,7 @@ function foo() {
         if ( mixer2 ) {
           mixer2.update( ( time - prevTime ) * 0.001 );
         }
-        prevTime = time;  
+        prevTime = time;
       }
 
       //условие перемещения нижнего куба
