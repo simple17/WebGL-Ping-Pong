@@ -1,0 +1,32 @@
+body{
+    margin: 0;
+    overflow: hidden;
+}
+.scores{
+  position: fixed;
+  top: 50px;
+  width: 370px;
+  text-align: center;
+  left: 50%;
+  margin-left: -185px;
+  display: flex;
+  justify-content: space-between;
+  color: white;
+  font-weight: bold;
+  font-size: 24px;
+  line-height: 0.1;
+}
+
+.scores > div {
+  width: 33.33333%;
+}
+
+.scores .first{
+  background: red;
+}
+.scores .second{
+  background: green;
+}
+.scores .third{
+  background: blue;
+}

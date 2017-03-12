@@ -6,6 +6,27 @@ var WebSocketServer = require('ws').Server;
 var server = http.createServer(app);
 
 var clientsState = {
+  1: {
+    color: '#FF0000',
+    orientation: {
+      x: 0,
+      y: 0
+    }
+  },
+  2: {
+    color: '#00FF00',
+    orientation: {
+      x: 0,
+      y: 0
+    }
+  },
+  3: {
+    color: '#0000FF',
+    orientation: {
+      x: 0,
+      y: 0
+    }
+  }
 };
 
 var connections = [];
@@ -48,6 +69,11 @@ wss.on("connection", function(w){
       case 'getStates':
         w.send(JSON.stringify(clientsState));
         break;
+
+      case 'initClient':
+        w.send(JSON.stringify({
+          color: clientsState[messageData.clientId].color
+        }));
       default:
 
     }

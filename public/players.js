@@ -23,4 +23,8 @@ var players = {
             y: - Math.sqrt(3) * 6 + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1)
         }
     }
+<<<<<<< HEAD
 };
+=======
+}
+>>>>>>> 81220014891b789e78fd16d7b1c8390b5e19848a
