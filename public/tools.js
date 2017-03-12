@@ -6,5 +6,6 @@ var tools = {
         geometry.vertices.push(new THREE.Vector3(to.x, to.y, 0));
         var line = new THREE.Line(geometry, materialRED);
         vars.SCENE.add(line);
+        return line;
     }
 };
