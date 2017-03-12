@@ -59,7 +59,7 @@ function foo() {
 
     var cubeGoalsGeometry = new THREE.CubeGeometry(2 * vars.sizeOfSideOfTriangle, vars.goalWidth, 0);
     var cubeGoalMaterial = new THREE.MeshBasicMaterial(
-        {color: 0xff8787, wireframe: false}
+        {color: 0x494c90, wireframe: false}
     );
 
     var redGoal = new THREE.Mesh(cubeGoalsGeometry, cubeGoalMaterial);
@@ -94,7 +94,7 @@ function foo() {
 
     var cubeBordersGeometry = new THREE.CubeGeometry( 1.34, vars.borderWidth, 0);
     var cubeBordersMaterial = new THREE.MeshBasicMaterial(
-        {color: 0x0000ff, wireframe: false}
+        {color: 0x494c90, wireframe: false}
     );
 
     var borderGB = new THREE.Mesh(cubeBordersGeometry, cubeBordersMaterial);
@@ -139,7 +139,7 @@ function foo() {
     //второй куб
     var cubeGeometry = new THREE.CubeGeometry(vars.sizeOfPlayers, 0.5, 0);
     var cubeMaterial = new THREE.MeshBasicMaterial(
-        {color: 0x00ff00, wireframe: false});
+        {color: 0x008000, wireframe: false});
     var cubeSecond = new THREE.Mesh(cubeGeometry, cubeMaterial);
     cubeSecond.rotation.z = Math.PI/3;
     cubeSecond.position.x = players.second.startPosition.x;
@@ -169,7 +169,7 @@ function foo() {
     //создаём сферу
     var sphereGeometry = new THREE.SphereGeometry(0.5, 0, 20);
     var sphereMaterial = new THREE.MeshLambertMaterial(
-        {color: 0x7777ff});
+        {color: 0x05cffb});
     var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
     sphere.position.x = 0;
     sphere.position.y = 0;
@@ -177,17 +177,17 @@ function foo() {
     vars.SCENE.add(sphere);
 
     //создаём источник света
-    var spotLight = new THREE.SpotLight(0xffffff);
-    spotLight.position.set(15, 5, 0);
-    vars.SCENE.add(spotLight);
+    var spotLightFirst = new THREE.SpotLight(0xffffff);
+    spotLightFirst.position.set(15, 5, 0);
+    vars.SCENE.add(spotLightFirst);
 
-    var spotLight2 = new THREE.SpotLight(0xffffff);
-    spotLight2.position.set(0, -14, 0);
-    vars.SCENE.add(spotLight2);
+    var spotLightSecond = new THREE.SpotLight(0xffffff);
+    spotLightSecond.position.set(0, -14, 0);
+    vars.SCENE.add(spotLightSecond);
 
-    var spotLight3 = new THREE.SpotLight(0xffffff);
-    spotLight3.position.set(-15, 5, 0);
-    vars.SCENE.add(spotLight3);
+    var spotLightThird = new THREE.SpotLight(0xffffff);
+    spotLightThird.position.set(-15, 5, 0);
+    vars.SCENE.add(spotLightThird);
 
     //задаём положение камеры
     camera.position.x = 0;
@@ -346,6 +346,7 @@ function foo() {
 
       if (players.first.direction == 'left' && cubeFirst.position.x > -vars.sizeOfSideOfTriangle) {
           cubeFirst.position.x -= vars.cubeStep;
+          spotLightFirst.position.x -= vars.cubeStep;
       } else if (players.first.direction == 'left' && cubeFirst.position.x <= -vars.sizeOfSideOfTriangle) {
           players.first.direction = 'right';
       } else if (players.first.direction == 'right' && cubeFirst.position.x <= vars.sizeOfSideOfTriangle) {
@@ -364,6 +365,9 @@ function foo() {
           cubeSecond.position.x -= vars.cubeStep;
           cubeSecond.position.y = Math.sqrt(3) * cubeSecond.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
 
+          spotLightSecond.position.x -= vars.cubeStep;
+          spotLightSecond.position.y = Math.sqrt(3) * cubeSecond.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
+
       } else if (players.second.direction == 'left' &&
           cubeSecond.position.x <= -vars.sizeOfSideOfTriangle &&
           cubeSecond.position.y <= -vars.sizeOfSideOfTriangle) {
@@ -376,6 +380,9 @@ function foo() {
 
           cubeSecond.position.x += vars.cubeStep;
           cubeSecond.position.y = Math.sqrt(3) * cubeSecond.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
+
+          spotLightSecond.position.x += vars.cubeStep;
+          spotLightSecond.position.y = Math.sqrt(3) * cubeSecond.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
 
       } else if (players.second.direction == 'right' &&
           cubeSecond.position.x > 0 &&
@@ -392,6 +399,9 @@ function foo() {
           cubeThird.position.x -= vars.cubeStep;
           cubeThird.position.y = -Math.sqrt(3) * cubeThird.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
 
+          spotLightThird.position.x -= vars.cubeStep;
+          spotLightThird.position.y = -Math.sqrt(3) * cubeThird.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
+
       } else if (players.third.direction == 'left' &&
           cubeThird.position.x <= 0 &&
           cubeThird.position.y >= (Math.sqrt(3) - 1) * vars.sizeOfSideOfTriangle) {
@@ -403,6 +413,9 @@ function foo() {
 
           cubeThird.position.x += vars.cubeStep;
           cubeThird.position.y = -Math.sqrt(3) * cubeThird.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
+
+          spotLightThird.position.x += vars.cubeStep;
+          spotLightThird.position.y = -Math.sqrt(3) * cubeThird.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
 
       } else if (players.third.direction == 'right' &&
           cubeThird.position.x >= vars.sizeOfSideOfTriangle &&
