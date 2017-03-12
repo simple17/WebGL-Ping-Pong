@@ -1,34 +1,42 @@
-// (() => {
-//   var socket = new WebSocket(`ws://${window.location.hostname}:${window.location.port}/client`);
-//   socket.onopen = function(){
-//     socket.send(JSON.stringify({
-//       type: 'initView'
-//     }));
-//   }
-//
-//   socket.onmessage = function(msg){
-//     var data = JSON.parse(msg.data);
-//     //Я сильный волчара!!!! :DDDDDD
-//     if(data[1] !== undefined){
-//       players.first.direction = parseInt(data[1].orientation.y) <= 0 ? 'left' : 'right';
-//       console.log('first goes ' + players.first.direction);
-//     }
-//     if(data[2] !== undefined){
-//       players.second.direction = parseInt(data[2].orientation.y) <= 0 ? 'left' : 'right';
-//       console.log('second goes ' + players.first.direction);
-//     }
-//     if(data[3] !== undefined){
-//       players.third.direction = parseInt(data[3].orientation.y) <= 0 ? 'left' : 'right';
-//       console.log('third goes ' + players.first.direction);
-//     }
-//   }
-//
-//   setInterval(() => {
-//     socket.send(JSON.stringify({type: 'getStates'}));
-//   }, 100);
-// })();
+(() => {
+  window.horses = window.location.hash.slice(1);
+
+  if(window.horses == 'horses'){
+    document.getElementById('horse').play();
+  }
+
+  var socket = new WebSocket(`ws://${window.location.hostname}:${window.location.port}/client`);
+  socket.onopen = function(){
+    socket.send(JSON.stringify({
+      type: 'initView'
+    }));
+  }
+
+  socket.onmessage = function(msg){
+    var data = JSON.parse(msg.data);
+    //Я сильный волчара!!!! :DDDDDD
+    if(data[1] !== undefined){
+      players.first.direction = parseInt(data[1].orientation.y) <= 0 ? 'left' : 'right';
+      console.log('first goes ' + players.first.direction);
+    }
+    if(data[2] !== undefined){
+      players.second.direction = parseInt(data[2].orientation.y) <= 0 ? 'left' : 'right';
+      console.log('second goes ' + players.first.direction);
+    }
+    if(data[3] !== undefined){
+      players.third.direction = parseInt(data[3].orientation.y) <= 0 ? 'left' : 'right';
+      console.log('third goes ' + players.first.direction);
+    }
+  }
+
+  setInterval(() => {
+    socket.send(JSON.stringify({type: 'getStates'}));
+  }, 100);
+})();
 
 function foo() {
+  var mixer, mixer2;
+  var horseLeft, horseRight;
     console.log('foo is running');
     // here we'll put the Three.js stuff
     //создаём сцену и камеру
@@ -51,7 +59,7 @@ function foo() {
 
     var cubeGoalsGeometry = new THREE.CubeGeometry(2 * vars.sizeOfSideOfTriangle, vars.goalWidth, 0);
     var cubeGoalMaterial = new THREE.MeshBasicMaterial(
-        {color: 0xff8787, wireframe: false}
+        {color: 0x494c90, wireframe: false}
     );
 
     var redGoal = new THREE.Mesh(cubeGoalsGeometry, cubeGoalMaterial);
@@ -86,7 +94,7 @@ function foo() {
 
     var cubeBordersGeometry = new THREE.CubeGeometry(3, vars.borderWidth, 0);
     var cubeBordersMaterial = new THREE.MeshBasicMaterial(
-        {color: 0x0000ff, wireframe: false}
+        {color: 0x494c90, wireframe: false}
     );
     // заглушки на углах
 
@@ -136,7 +144,7 @@ function foo() {
     //второй куб
     var cubeGeometry = new THREE.CubeGeometry(vars.sizeOfPlayers, 0.5, 0);
     var cubeMaterial = new THREE.MeshBasicMaterial(
-        {color: 0x00ff00, wireframe: false});
+        {color: 0x008000, wireframe: false});
     var cubeSecond = new THREE.Mesh(cubeGeometry, cubeMaterial);
     cubeSecond.rotation.z = Math.PI / 3;
     cubeSecond.position.x = players.second.startPosition.x;
@@ -168,7 +176,7 @@ function foo() {
     //создаём сферу
     var sphereGeometry = new THREE.SphereGeometry(0.5, 0, 20);
     var sphereMaterial = new THREE.MeshLambertMaterial(
-        {color: 0x7777ff});
+        {color: 0x05cffb});
     var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
     sphere.position.x = 0;
     sphere.position.y = 0;
@@ -176,17 +184,17 @@ function foo() {
     vars.SCENE.add(sphere);
 
     //создаём источник света
-    var spotLight = new THREE.SpotLight(0xffffff);
-    spotLight.position.set(15, 5, 0);
-    vars.SCENE.add(spotLight);
+    var spotLightFirst = new THREE.SpotLight(0xffffff);
+    spotLightFirst.position.set(15, 5, 0);
+    vars.SCENE.add(spotLightFirst);
 
-    var spotLight2 = new THREE.SpotLight(0xffffff);
-    spotLight2.position.set(0, -14, 0);
-    vars.SCENE.add(spotLight2);
+    var spotLightSecond = new THREE.SpotLight(0xffffff);
+    spotLightSecond.position.set(0, -14, 0);
+    vars.SCENE.add(spotLightSecond);
 
-    var spotLight3 = new THREE.SpotLight(0xffffff);
-    spotLight3.position.set(-15, 5, 0);
-    vars.SCENE.add(spotLight3);
+    var spotLightThird = new THREE.SpotLight(0xffffff);
+    spotLightThird.position.set(-15, 5, 0);
+    vars.SCENE.add(spotLightThird);
 
     //задаём положение камеры
     camera.position.x = 0;
@@ -286,12 +294,50 @@ function foo() {
     var particleSystem = addParticles();
     vars.SCENE.add(particleSystem);
 
+    //Рисуем коня
+    if(window.horses == 'horses'){
+      var loader = new THREE.JSONLoader();
+  				loader.load( "horse.js", function( geometry ) {
+  					horseLeft = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( {
+  						vertexColors: THREE.FaceColors,
+  						morphTargets: true
+  					} ) );
+  					horseLeft.scale.set( 0.1, 0.1, 0.1 );
+            // mesh.position(0, 0, 0);
+
+  					vars.SCENE.add( horseLeft );
+
+            horseRight = horseLeft.clone();
+            horseLeft.position.set(-20,-12,5);
+
+            vars.SCENE.add( horseRight );
+            horseRight.position.set(20,-12,5);
+
+            mixer = new THREE.AnimationMixer( horseLeft );
+  					var clip = THREE.AnimationClip.CreateFromMorphTargetSequence( 'gallop', geometry.morphTargets, 30 );
+  					mixer.clipAction( clip ).setDuration( 1 ).play();
+
+            mixer2 = new THREE.AnimationMixer( horseRight );
+  					var clip2 = THREE.AnimationClip.CreateFromMorphTargetSequence( 'gallop', geometry.morphTargets, 30 );
+  					mixer2.clipAction( clip ).setDuration( 1 ).play();
+  				} );
+
+    }
+
+
     function checkCollision() {
 
     }
 
     var collisionDetect = false;
     var firstFrame = true;
+    var prevTime = Date.now();
+
+    composer = new THREE.EffectComposer( renderer );
+    composer.addPass( new THREE.RenderPass( vars.SCENE, camera ) );
+    glitchPass = new THREE.GlitchPass();
+    glitchPass.renderToScreen = true;
+    composer.addPass( glitchPass );
 
     function render() {
         particleSystem.rotation.y += 0.01;
@@ -299,10 +345,22 @@ function foo() {
         sphere.position.y += vars.sphere.direction.y;
         calculateCollisionPoint(sphere.position);
 
-        //условие перемещения нижнего куба
+      //АНимация лошадей
+      if(window.horses == 'horses'){
+        var time = Date.now();
+        if ( mixer ) {
+          mixer.update( ( time - prevTime ) * 0.001 );
+        }
+        if ( mixer2 ) {
+          mixer2.update( ( time - prevTime ) * 0.001 );
+        }
+        prevTime = time;
+      }
+//условие перемещения нижнего куба
 
         if (players.first.direction == 'left' && cubeFirst.position.x > -vars.sizeOfSideOfTriangle) {
             cubeFirst.position.x -= vars.cubeStep;
+            spotLightFirst.position.x -= vars.cubeStep;
         } else if (players.first.direction == 'left' && cubeFirst.position.x <= -vars.sizeOfSideOfTriangle) {
             players.first.direction = 'right';
         } else if (players.first.direction == 'right' && cubeFirst.position.x <= vars.sizeOfSideOfTriangle) {
@@ -321,6 +379,9 @@ function foo() {
             cubeSecond.position.x -= vars.cubeStep;
             cubeSecond.position.y = Math.sqrt(3) * cubeSecond.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
 
+            spotLightSecond.position.x -= vars.cubeStep;
+            spotLightSecond.position.y = Math.sqrt(3) * cubeSecond.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
+
         } else if (players.second.direction == 'left' &&
             cubeSecond.position.x <= -vars.sizeOfSideOfTriangle &&
             cubeSecond.position.y <= -vars.sizeOfSideOfTriangle) {
@@ -333,6 +394,9 @@ function foo() {
 
             cubeSecond.position.x += vars.cubeStep;
             cubeSecond.position.y = Math.sqrt(3) * cubeSecond.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
+
+            spotLightSecond.position.x += vars.cubeStep;
+            spotLightSecond.position.y = Math.sqrt(3) * cubeSecond.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
 
         } else if (players.second.direction == 'right' &&
             cubeSecond.position.x > 0 &&
@@ -349,6 +413,9 @@ function foo() {
             cubeThird.position.x -= vars.cubeStep;
             cubeThird.position.y = -Math.sqrt(3) * cubeThird.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
 
+            spotLightThird.position.x -= vars.cubeStep;
+            spotLightThird.position.y = -Math.sqrt(3) * cubeThird.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
+
         } else if (players.third.direction == 'left' &&
             cubeThird.position.x <= 0 &&
             cubeThird.position.y >= (Math.sqrt(3) - 1) * vars.sizeOfSideOfTriangle) {
@@ -361,14 +428,16 @@ function foo() {
             cubeThird.position.x += vars.cubeStep;
             cubeThird.position.y = -Math.sqrt(3) * cubeThird.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
 
+            spotLightThird.position.x += vars.cubeStep;
+            spotLightThird.position.y = -Math.sqrt(3) * cubeThird.position.x + vars.sizeOfSideOfTriangle * (Math.sqrt(3) - 1);
+
         } else if (players.third.direction == 'right' &&
             cubeThird.position.x >= vars.sizeOfSideOfTriangle &&
             cubeThird.position.y <= -vars.sizeOfSideOfTriangle) {
             players.third.direction = 'left';
         }
 
-        var movementDirection = new THREE.Vector3(1, 0, 1);
-
+		var movementDirection = new THREE.Vector3(1, 0, 1);
         var ray = new THREE.Raycaster();
         ray.set(vars.sphere.collisionPoint, movementDirection);
         var collisionResults = ray.intersectObjects(collidableMeshList);
@@ -428,7 +497,12 @@ function foo() {
         }
         renderScores();
         requestAnimationFrame(render);
-        renderer.render(vars.SCENE, camera);
+
+        if(window.horses == 'horses'){
+            composer.render();
+        } else{
+            renderer.render(vars.SCENE, camera);
+        }
 
         function reflect(normalVect, objectVect) {
             objectVect.reflect(normalVect);
