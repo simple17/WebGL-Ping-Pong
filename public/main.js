@@ -29,6 +29,8 @@
 // })();
 
 function foo() {
+  var mixer, mixer2;
+  var horseLeft, horseRight;
     console.log('foo is running');
     // here we'll put the Three.js stuff
     //создаём сцену и камеру
@@ -277,13 +279,42 @@ function foo() {
     var particleSystem = addParticles();
     vars.SCENE.add(particleSystem);
 
+    //Рисуем коня
+
+    // var loader = new THREE.JSONLoader();
+		// 		loader.load( "horse.js", function( geometry ) {
+		// 			horseLeft = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( {
+		// 				vertexColors: THREE.FaceColors,
+		// 				morphTargets: true
+		// 			} ) );
+		// 			horseLeft.scale.set( 0.1, 0.1, 0.1 );
+    //       // mesh.position(0, 0, 0);
+    //
+		// 			vars.SCENE.add( horseLeft );
+    //
+    //       horseRight = horseLeft.clone();
+    //       horseLeft.position.set(-20,-12,5);
+    //
+    //       vars.SCENE.add( horseRight );
+    //       horseRight.position.set(20,-12,5);
+    //
+    //       mixer = new THREE.AnimationMixer( horseLeft );
+		// 			var clip = THREE.AnimationClip.CreateFromMorphTargetSequence( 'gallop', geometry.morphTargets, 30 );
+		// 			mixer.clipAction( clip ).setDuration( 1 ).play();
+    //
+    //       mixer2 = new THREE.AnimationMixer( horseRight );
+		// 			var clip2 = THREE.AnimationClip.CreateFromMorphTargetSequence( 'gallop', geometry.morphTargets, 30 );
+		// 			mixer2.clipAction( clip ).setDuration( 1 ).play();
+		// 		} );
+
+
     function checkCollision() {
 
     }
 
     var collisionDetect = false;
     var firstFrame = true;
-
+    var prevTime = Date.now();
     function render() {
       particleSystem.rotation.y+=0.01;
       sphere.position.x += vars.sphere.stepX;
@@ -291,6 +322,16 @@ function foo() {
       //sphere.position.y = vars.angle * sphere.position.x;
       sphere.position.y += vars.sphere.stepY;
 
+      //АНимация лошадей
+
+      // var time = Date.now();
+      // if ( mixer ) {
+      //   mixer.update( ( time - prevTime ) * 0.001 );
+      // }
+      // if ( mixer2 ) {
+      //   mixer2.update( ( time - prevTime ) * 0.001 );
+      // }
+      // prevTime = time;
 
       //условие перемещения нижнего куба
 
