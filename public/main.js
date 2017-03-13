@@ -71,7 +71,7 @@ function foo() {
         {color: 0x494c90, wireframe: false}
     );
     var goalMat =  new THREE.MeshBasicMaterial(
-              {color: 0xff0000, wireframe: false}
+              {color: 0xffc04c, wireframe: false}
     );
 
     var redGoal = new THREE.Mesh(cubeGoalsGeometry, cubeGoalMaterial);
@@ -333,6 +333,7 @@ function foo() {
   					var clip2 = THREE.AnimationClip.CreateFromMorphTargetSequence( 'gallop', geometry.morphTargets, 30 );
   					mixer2.clipAction( clip ).setDuration( 1 ).play();
   				} );
+          document.getElementById('horse').play();
 
     }
 
@@ -353,8 +354,8 @@ function foo() {
 
     function render() {
         particleSystem.rotation.y += 0.01;
-        sphere.position.x += vars.sphere.direction.x;
-        sphere.position.y += vars.sphere.direction.y;
+        sphere.position.x += vars.sphere.direction.x * vars.sphere.speed;
+        sphere.position.y += vars.sphere.direction.y * vars.sphere.speed;
         calculateCollisionPoint(sphere.position);
 
       //АНимация лошадей
@@ -455,6 +456,7 @@ function foo() {
         var collisionResults = ray.intersectObjects(collidableMeshList);
         if (collisionResults.length > 0 && collisionResults[0].distance <= 1) {
             var thisElement = collisionResults[0].object;
+var ttt = collisionResults[0];
             if(collisionResults.length > 1){
               var collisionElement;
               collisionResults.forEach(function(el){
@@ -462,22 +464,20 @@ function foo() {
 
                 }else{
                   thisElement = el.object;
+                  ttt = el;
                 }
               })
             }
             var horsesMode = false;
             switch (thisElement.name) {
                 case 'red':
-                    console.log('red rocket');
-                    nextSteps = reflect(thisElement.normal, vars.sphere.direction);
+                    reflectFromPlatform(ttt);
                     break;
                 case 'green':
-                    console.log('green rocket');
-                    nextSteps = reflect(thisElement.normal, vars.sphere.direction);
+                    reflectFromPlatform(ttt);
                     break;
                 case 'blue':
-                    console.log('blue rocket');
-                    nextSteps = reflect(thisElement.normal, vars.sphere.direction);
+                    reflectFromPlatform(ttt);
                     break;
                 case 'redGoal':
                 reflectGoal(thisElement)
@@ -532,6 +532,20 @@ function foo() {
             renderer.render(vars.SCENE, camera);
         }
 
+        function reflectFromPlatform(obj){
+          var point = obj.point;
+          var center = obj.object.position;
+          var dist = Math.abs(center.distanceTo( point ));
+
+          vars.sphere.speed += dist;
+          if(vars.sphere.speed >= 1.5){
+            vars.sphere.speed = 1.5;
+          }
+
+          setTimeout(function (){vars.sphere.speed = 1;},500)
+          reflect(obj.object.normal,  vars.sphere.direction);
+        }
+
         function markGoal(obj){
           obj.material = goalMat;
           setTimeout(function (){obj.material = cubeGoalMaterial;},100)
@@ -546,7 +560,7 @@ function foo() {
           reflect(goal.normal, vars.sphere.direction);
           markGoal(goal);
           if(window.horses == 'horses'){
-            window.beep();  
+            window.beep();
             // window.sheep();
           } else{
             window.beep();
